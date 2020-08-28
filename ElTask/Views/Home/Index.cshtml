@@ -1,0 +1,112 @@
+﻿@{
+    Layout = "_Layout";
+}
+    <div id="app">
+        <button class="btn btn-primary" v-on:click="showNewLaptopModal">Add new Laptop</button>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Manufacturer</th>
+                    <th>Model</th>
+                    <th>Price</th>
+                    <th>Deprication Period</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(laptop,index) in laptops">
+                    <td>{{index+1}}</td>
+                    <td>{{laptop.Manufacturer}}</td>
+                    <td>{{laptop.Model}}</td>
+                    <td>{{laptop.Price}}</td>
+                    <td>{{laptop.DepreciationPeriod}}</td>
+                </tr>
+            </tbody>
+            <tr>
+                <td></td>
+            </tr>
+        </table>
+
+
+        <div class="modal fade" id="addNewLaptop" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Add new laptop</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div>
+                            <div class="form-group">
+                                <label for="Manufacturer">Manufacturer</label>
+                                <input v-model="Manufacturer" type="text" class="form-control" style="width:100%" />
+                            </div>
+                            <div class="form-group">
+                                <label for="Model">Model</label>
+                                <input v-model="Model" type="text" class="form-control" style="width:100%" />
+                            </div>
+                            <div class="form-group">
+                                <label for="Price">Price</label>
+                                <input v-model="Price" type="text" class="form-control" style="width:100%" />
+                            </div>
+                            <div class="form-group">
+                                <label for="DepreciationPeriod">DepreciationPeriod</label>
+                                <input v-model="DepreciationPeriod" type="text" class="form-control" style="width:100%" />
+                            </div>
+                            
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" v-on:click="addLaptop">Save changes</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+    </div>
+@section Scripts{
+    <script src="~/lib/vue/vue.min.js"></script>
+    <script>
+        var app = new Vue({
+            el: "#app",
+            data: {
+                laptops: [],
+                Manufacturer: "",
+                Model: "",
+                Price: "",
+                DepreciationPeriod: ""
+
+            },
+            created: function () {
+                this.getLaptops();
+                
+            },
+            methods: {
+                showNewLaptopModal: function(event) {
+                    $("showNewLaptopModal").modal("show")
+                },
+                addLaptop: function() {
+                    var newLaptop = {
+                        Manufacturer: this.Manufacturer,
+                        Model: this.Model,
+                        Price: this.Price,
+                        DepreciationPeriod: this.DepreciationPeriod
+                    }
+                    this.laptops.splice(0, 0, newLaptop);
+                },
+                getLaptops: function () {
+                    var vm = this;
+
+                    $.ajax({ url: "/home", method: "GET" })
+                        .done(function (data) {
+                            vm.laptops = data;
+                            toastr.success("Success");
+                        }).fail(function () {
+                            toastr.error("Error")
+                        });
+                }
+            }
+        })
+    </script>
+}
